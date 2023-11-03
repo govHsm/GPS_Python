@@ -46,16 +46,20 @@ def list_sum(c,d,a_a,nav_al):
     
 def same_change(nav_all):
     a = 0
+    second_list = []
+    third_list = []
     while len(nav_all) != a:
         if a >= 1:
-            if a + 1 != len(nav_all): # 3개 이상 넘어가는 건 없다는 가정
+            if a + 1 != len(nav_all):
                 if nav_all[a-1][1] == nav_all[a][1] == nav_all[a+1][1]: # 시간이 같고 x 의 좌표가 같을 경우
                     if nav_all[a-1][2] == nav_all[a][2]:
                         second_same = round((nav_all[a+2][2] - nav_all[a][2])/2,2)
+                        second_list.append(second_same)
                         nav_all[a][2] = round(nav_all[a+2][2]- second_same,2)
                         nav_all[a+1][2] = round(nav_all[a+2][2]- (second_same*2),2)
                     if nav_all[a-1][3] == nav_all[a][3]: # 시간이 같고 y 의 좌표가 같을 경우
                         third_same = round((nav_all[a+2][3] - nav_all[a][3])/2,2)
+                        third_list.append(third_same)
                         nav_all[a][3] = round(nav_all[a+2][3]- third_same,2)
                         nav_all[a+1][3] = round(nav_all[a+2][3]- (third_same*2),2)
 
@@ -63,9 +67,17 @@ def same_change(nav_all):
                     if nav_all[a-1][2] == nav_all[a][2]:
                         second_same = round((nav_all[a+1][2] - nav_all[a][2])/2,2)
                         nav_all[a][2] = round(nav_all[a+1][2]- second_same,2)
+                        second_list.append(second_same)
                     if nav_all[a-1][3] == nav_all[a][3]: # 시간이 같고 y 의 좌표가 같을 경우
                         third_same = round((nav_all[a+1][3] - nav_all[a][3])/2,2)
-                        nav_all[a][3] = round(nav_all[a+1][3]- third_same,2) 
+                        third_list.append(third_same)
+                        nav_all[a][3] = round(nav_all[a+1][3]- third_same,2)
+            else:
+                if nav_all[a][1] == nav_all[a-1][1]:
+                    if nav_all[a][2] == nav_all[a-1][2]:
+                        nav_all[a][2] += avg_second(second_list)
+                    if nav_all[a][3] == nav_all[a-1][3]:
+                        nav_all[a][3] += avg_third(third_list)
         a += 1
                         
 
@@ -90,6 +102,9 @@ def time_change(nav_all):
                     nav_all[a+1][1] += 0.8
 
                 elif nav_all[a][1] == nav_all[a-1][1]:
+                    nav_all[a][1] += 0.5
+            else:
+                if nav_all[a][1] == nav_all[a-1][1]:
                     nav_all[a][1] += 0.5
         a += 1
     
@@ -143,7 +158,7 @@ def zeroto(nav_all): # 시간 및 0의 자리 바꿔주는 함수
 
 # 파일 생성해주는 기능 , 파일 이름은 시간으로 설정됨
 def file_make(file_name,nav_all):
-    now = time.strftime('%y%m%H%M%S'+'_')
+    now = time.strftime('%y.%m.%H.%M.%S'+'_')
     for nn in nav_all:
         strnav = ''
         for nnn in nn:
@@ -152,9 +167,22 @@ def file_make(file_name,nav_all):
         file_change.write(strnav+'\n')
         file_change.close
 
+# GPS 이동거리 평균
+
+def avg_second(second_value): # gps x 평균  이동 거리
+    second_value_all = 0
+    for list_second in second_value:
+        second_value_all += list_second
+    second_value_all = round(second_value_all / len(second_value),2)
+    return second_value_all
+
+def avg_third(third_value): # gps y 평균 이동 거리
+    third_value_all = 0
+    for list_third in third_value:
+        third_value_all += list_third
+    third_value_all = round(third_value_all / len(third_value),2)
+    return third_value_all
+
 
 # aa.write(+'\n')
 # aa.close()
-
-
-
